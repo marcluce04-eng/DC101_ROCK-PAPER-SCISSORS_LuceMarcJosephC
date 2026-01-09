@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock-Paper-Scissors Arcade</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        .app-container {
+            background: #16213e;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .title {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #00f5d4;
+            text-shadow: 0 0 10px rgba(0,245,212,0.5);
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 15px;
+            background: #0f3460;
+            border-radius: 10px;
+        }
+
+        .score-box {
+            font-size: 18px;
+        }
+
+        .score {
+            font-size: 32px;
+            color: #ff2a6d;
+            font-weight: bold;
+        }
+
+        .choices {
+            margin: 30px 0;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .choice-btn {
+            background: #e94560;
+            border: none;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(233,69,96,0.4);
+        }
+
+        .choice-btn:hover {
+            transform: scale(1.1);
+            background: #ff5f7e;
+        }
+
+        .result-area {
+            margin: 20px 0;
+            padding: 20px;
+            background: #0f3460;
+            border-radius: 10px;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .result-text {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .move-text {
+            font-size: 16px;
+            color: #d1d1e0;
+        }
+
+        .reset-btn {
+            background: #00f5d4;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 18px;
+            color: #1a1a2e;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,245,212,0.4);
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            background: #00ffdf;
+        }
+
+        /* Mobile Touch Optimization */
+        @media (max-width: 360px) {
+            .choice-btn {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <h1 class="title">🤘 ROCK-PAPER-SCISSORS 📄✂️</h1>
+        
+        <div class="score-board">
+            <div class="score-box">
+                YOU<br>
+                <span class="score" id="user-score">0</span>
+            </div>
+            <div class="score-box">
+                CPU<br>
+                <span class="score" id="cpu-score">0</span>
+            </div>
+        </div>
+
+        <div class="choices">
+            <button class="choice-btn" id="rock">🤘</button>
+            <button class="choice-btn" id="paper">📄</button>
+            <button class="choice-btn" id="scissors">✂️</button>
+        </div>
+
+        <div class="result-area">
+            <div class="result-text" id="result-text">Choose your move!</div>
+            <div class="move-text" id="move-text">Your move vs CPU move</div>
+        </div>
+
+        <button class="reset-btn" id="reset-btn">RESET SCORE</button>
+    </div>
+
+    <script>
+        // Get Elements
+        const userScoreEl = document.getElementById('user-score');
+        const cpuScoreEl = document.getElementById('cpu-score');
+        const resultTextEl = document.getElementById('result-text');
+        const moveTextEl = document.getElementById('move-text');
+        const choiceBtns = document.querySelectorAll('.choice-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+        // Initialize Scores
+        let userScore = 0;
+        let cpuScore = 0;
+
+        // Get CPU Choice
+        function getCpuChoice() {
+            const choices = ['rock', 'paper', 'scissors'];
+            const randomIndex = Math.floor(Math.random() * 3);
+            return choices[randomIndex];
+        }
+
+        // Map choices to emojis for better display
+        const choiceEmojis = {
+            rock: '🤘',
+            paper: '📄',
+            scissors: '✂️'
+        };
+
+        // Determine winner and update game state
+        function playRound(userChoice) {
+            const cpuChoice = getCpuChoice();
+            let result = '';
+
+            // Check game rules
+            if (userChoice === cpuChoice) {
+                result = "It's a Tie!";
+            } else if (
+                (userChoice === 'rock' && cpuChoice === 'scissors') ||
+                (userChoice === 'paper' && cpuChoice === 'rock') ||
+                (userChoice === 'scissors' && cpuChoice === 'paper')
+            ) {
+                result = "You Win!";
+                userScore++;
+                userScoreEl.textContent = userScore;
+            } else {
+                result = "CPU Wins!";
+                cpuScore++;
+                cpuScoreEl.textContent = cpuScore;
+            }
+
+            // Update display texts
+            resultTextEl.textContent = result;
+            moveTextEl.textContent = '${choiceEmojis[userChoice]} Your Move vs CPU ${choiceEmojis[cpuChoice]}';
+        }
+
+        // Add click event listeners to choice buttons
+        choiceBtns.forEach(button => {
+            button.addEventListener('click', () => {
+                playRound(button.id);
+            });
+        });
+
+        // Add click event listener to reset button
+        resetBtn.addEventListener('click', () => {
+            userScore = 0;
+            cpuScore = 0;
+            userScoreEl.textContent = userScore;
+            cpuScoreEl.textContent = cpuScore;
+            resultTextEl.textContent = "Choose your move!";
+            moveTextEl.textContent = "Your move vs CPU move";
+        });
+    </script>
+</body>
+</html>`${choiceEmojis[userChoice]} Your Move vs CPU ${choiceEmojis[cpuChoice]}`;
